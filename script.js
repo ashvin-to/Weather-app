@@ -18,7 +18,7 @@ const weatherCodes = {
 };
 
 const getWeatherData = async (cityName) => {
-    const API_URL = `http://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}&days=3`;
+    const API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}&days=3`;
 
     try {
         const response = await fetch(API_URL);
