@@ -17,7 +17,6 @@ const weatherCodes = {
     thunder_rain: [1273, 1276]
 };
 
-// Function to get weather data based on the city name
 const getWeatherData = async (cityName) => {
     const API_URL = `http://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}&days=3`;
 
@@ -26,49 +25,40 @@ const getWeatherData = async (cityName) => {
         const data = await response.json();
         document.body.classList.remove('no-show-results');
 
-        console.log(data); // Log the data to the console for debugging
+        console.log(data); 
 
-        // Ensure the data and 'current' object exist
         if (data && data.current) {
             const temperature = data.current.temp_c;
             const description = data.current.condition.text;
             const weatherCode = data.current.condition.code;
 
-            // Find the weather icon based on the condition code
             const weatherIcon = Object.keys(weatherCodes).find(icon => weatherCodes[icon].includes(weatherCode));
 
-            // Use a fallback icon if no icon is found
-            const iconFile = weatherIcon ? `${weatherIcon}.svg` : 'default.svg'; // 'default.svg' is a fallback icon
+            const iconFile = weatherIcon ? `${weatherIcon}.svg` : 'default.svg'; 
 
-            // Display the temperature and description in the HTML
             currentWeatherDiv.querySelector(".weather-icon").src = `./icons/${iconFile}`;
             currentWeatherDiv.querySelector(".temperature").innerHTML = `${temperature} <span>°C</span>`;
             currentWeatherDiv.querySelector(".description").innerText = description;
         } else {
-            // In case of invalid city or API error, show a fallback message
             currentWeatherDiv.querySelector(".temperature").innerHTML = "Data not found";
-            currentWeatherDiv.querySelector(".weather-icon").src = "./icons/reshot-icon-weather-VAUPX2QFJK.svg"; // Use fallback icon 
+            currentWeatherDiv.querySelector(".weather-icon").src = "./icons/reshot-icon-weather-VAUPX2QFJK.svg";  
             currentWeatherDiv.querySelector(".description").innerText = "Please try again with a valid city.";
             
-            // Clear the hourly weather display
             hourlyWeatherDiv.querySelector('.weather-list').innerHTML = '';
         }
 
-        // Handle Hourly Weather data
         if (data && data.forecast && data.forecast.forecastday) {
-            const hourlyData = data.forecast.forecastday[0].hour; // Get hourly data for today (0th day)
+            const hourlyData = data.forecast.forecastday[0].hour; 
             
-            // Clear the current hourly weather display before populating
             hourlyWeatherDiv.querySelector('.weather-list').innerHTML = '';
 
             hourlyData.forEach(hour => {
-                const time = new Date(hour.time_epoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format time to HH:mm
+                const time = new Date(hour.time_epoch * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
                 const temperature = hour.temp_c;
                 const weatherCode = hour.condition.code;
                 const weatherIcon = Object.keys(weatherCodes).find(icon => weatherCodes[icon].includes(weatherCode));
-                const iconFile = weatherIcon ? `${weatherIcon}.svg` : 'default.svg'; // Use a fallback icon if no icon is found
+                const iconFile = weatherIcon ? `${weatherIcon}.svg` : 'default.svg'; 
 
-                // Create the hourly weather item
                 const hourlyItem = document.createElement('li');
                 hourlyItem.classList.add('weather-item');
 
@@ -78,25 +68,21 @@ const getWeatherData = async (cityName) => {
                     <p class="temprature">${temperature}°C</p>
                 `;
 
-                // Append the hourly item to the hourly weather list
                 hourlyWeatherDiv.querySelector('.weather-list').appendChild(hourlyItem);
             });
         }
     } catch (error) {
         console.log('Error fetching weather data:', error);
-        // Show an error message in the HTML if there's an error with the API request
         currentWeatherDiv.querySelector(".temperature").innerHTML = "Error fetching data";
-        currentWeatherDiv.querySelector(".weather-icon").src = "./icons/default.svg"; // Use fallback icon
+        currentWeatherDiv.querySelector(".weather-icon").src = "./icons/default.svg"; 
         currentWeatherDiv.querySelector(".description").innerText = "Please try again later.";
         
-        // Clear the hourly weather display
         hourlyWeatherDiv.querySelector('.weather-list').innerHTML = '';
         
         document.body.classList.add("show-no-results");
     }
 }
 
-// Function to get the user's current location and weather
 const getLocationWeather = async () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
@@ -110,8 +96,8 @@ const getLocationWeather = async () => {
 
                 if (data && data.location) {
                     const cityName = data.location.name;
-                    searchInput.value = cityName; // Set the city name in the search input
-                    getWeatherData(cityName); // Fetch and display the weather for the current location
+                    searchInput.value = cityName; 
+                    getWeatherData(cityName); 
                 }
             } catch (error) {
                 console.log('Error fetching location weather data:', error);
@@ -125,18 +111,16 @@ const getLocationWeather = async () => {
     }
 }
 
-// Event listener for the search input
 searchInput.addEventListener("keyup", (e) => {
     const cityName = searchInput.value.trim();
 
     if (e.key === "Enter" && cityName !== "") {
         console.log(cityName);
-        getWeatherData(cityName); // Get weather data for the entered city
+        getWeatherData(cityName); 
         searchInput.value = "";
     }
 });
-
-// Event listener for the location button to get the user's location
+ 
 locationButton.addEventListener("click", () => {
-    getLocationWeather(); // Get and display weather for the user's location
+    getLocationWeather(); 
 });
